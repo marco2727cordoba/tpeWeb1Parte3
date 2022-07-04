@@ -1,9 +1,10 @@
 "uses strict"
 
-function processText(t, id) {
+async function processText(t, id) {
     let container = document.querySelector("#content");
     container.innerHTML = t;
     if(id = "catalago"){
+        mostrarTabla();
         container.querySelector("#btn-add").addEventListener("click", agregar);
         container.querySelector("#btn-addx3").addEventListener("click", agregarx3);
         container.querySelector("#btn-delete").addEventListener("click", eliminarUlt);
@@ -13,9 +14,6 @@ function processText(t, id) {
 
 async function load_content(id) {
     console.log("Loading content for {" + id + "}")
-    // Update text "Content loading for {id}..."
-    // Here you would do content loading magic...
-    // Perhaps run Fetch API to update resources
     let container = document.querySelector("#content")
     try{
         let response = await fetch(`${window.location.origin}/${id}.html`)
@@ -63,17 +61,20 @@ window.addEventListener("popstate", event => {
 
 let cat= []
 
+const URL = 'https://62bdb2d1c5ad14c110c4e397.mockapi.io/api/v1/yerbas'
+
 function agregarx3(){
     for(let i = 0;i < 3; i++){
         agregar();
     }
 }
 
-function agregar(){
+async function agregar(){
     let producto = document.querySelector("#producto").value;
     let peso = document.querySelector("#peso").value;
     let precio= document.querySelector("#precio").value;
     let oferta= document.querySelector("#oferta").value;
+    console.log(producto.value)
     if(producto != "" && peso != "" && precio != ""){
         let fila = {
             "producto": producto,
@@ -81,7 +82,18 @@ function agregar(){
             "precio": precio,   
             "oferta": oferta  
         }
-        cat.push(fila);
+    console.log(fila)
+    try {                                  // se empieza agregar en el json de mockapi
+        let resp = await fetch(URL, {
+            "method": "POST",
+            "headers": { "Content-type": "application/json"}, 
+            "body": JSON.stringify(fila)
+        });
+        let json = await resp.json();
+        console.log(json);
+    } catch (error) {
+        console.log("ERROR")
+    }
     }
     mostrarTabla()
 }
@@ -99,27 +111,30 @@ function vaciar(){
     cat = [];
 }
         
-function mostrarTabla(){
-    let tablaCatalogo = document.querySelector("#tableBody")
-    tablaCatalogo.innerHTML = " ";
-    for (const item of cat) {
-        if(item.oferta > 10){      //con esta condicion resaltamos con color la fila que tiene oferta
-            tablaCatalogo.innerHTML +=`<tr class = "resaltado"> 
-            <td>${item.producto}</td>
-            <td>${item.peso}gr</td>
-            <td>$${item.precio}</td>
-            <td>${item.oferta}%off</td>
-            </tr>`
+async function mostrarTabla(){
+    const tablaCatalogo = document.querySelector("#tableBody")
+    tablaCatalogo.innerHTML = ""
+    try {
+        let res = await fetch(URL); // este es el get para obtener los json que se guardaron en el mockapi
+        let json = await res.json();
+        for (const item of json ){
+            if(item.oferta > 10){      //con esta condicion resaltamos con color la fila que tiene oferta
+                tablaCatalogo.innerHTML +=`<tr class = "resaltado"> 
+                <td>${item.producto}</td>
+                <td>${item.peso}gr</td>
+                <td>$${item.precio}</td>
+                <td>${item.oferta}%off</td>
+                </tr>`
+            }
+            else{
+                tablaCatalogo.innerHTML +=`<tr> 
+                <td>${item.producto}</td>
+                <td>${item.peso}gr</td>
+                <td>$${item.precio}</td>
+                </tr>`
+            }
         }
-        else{
-            tablaCatalogo.innerHTML +=`<tr> 
-            <td>${item.producto}</td>
-            <td>${item.peso}gr</td>
-            <td>$${item.precio}</td>
-            </tr>`
-        }
-            
+    } catch (error) {   
+        console.log("ERROR EN LA FUNCION MOSTRAR TABLA")
     }    
-}
-
-mostrarTabla()    
+}  
