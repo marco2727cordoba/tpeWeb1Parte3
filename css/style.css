@@ -69,6 +69,7 @@ a{
 li a:hover{
     background: #FFFFFF;
     transition: 0.5s;
+    cursor: pointer;
 }
     
 h2 {
