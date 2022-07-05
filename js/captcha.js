@@ -1,4 +1,4 @@
-"uses strict"
+"use strict";
 
 let numero = Math.floor(Math.random()*1000 + 1);
 document.querySelector(".num").innerHTML = "el numero es: "+numero;
@@ -24,3 +24,4 @@ function refrescarNumero(){
     numero = Math.floor(Math.random()*1000 + 1);
     document.querySelector(".num").innerHTML = "nuevo numero: "+ numero;
 }
+

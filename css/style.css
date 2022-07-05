@@ -69,7 +69,6 @@ a{
 li a:hover{
     background: #FFFFFF;
     transition: 0.5s;
-    cursor: pointer;
 }
     
 h2 {
@@ -148,6 +147,10 @@ aside {
 
 aside img {
     height: 150px;
+}
+
+.oculto{
+    display: none;
 }
 
 .tabla {
